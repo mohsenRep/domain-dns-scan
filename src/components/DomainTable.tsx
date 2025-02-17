@@ -1,4 +1,4 @@
-import { DnsScanResult, SubdomainInfo } from "@/types/dns";
+import { DnsScanResult } from "@/types/dns";
 import { scanSubdomain } from "@/services/dnsService";
 import { useState } from "react";
 

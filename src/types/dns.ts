@@ -11,4 +11,22 @@ export interface SubdomainInfo {
   lastChecked: number;
 }
 
+export interface DnsAnswer {
+  name: string;
+  type: number;
+  TTL: number;
+  data: string;
+}
+
+export interface DnsResponse {
+  Status: number;
+  TC: boolean;
+  RD: boolean;
+  RA: boolean;
+  AD: boolean;
+  CD: boolean;
+  Question: Array<{ name: string; type: number }>;
+  Answer?: DnsAnswer[];
+}
+
 

@@ -1,12 +1,13 @@
-import { DnsScanResult, SubdomainInfo } from '@/types/dns';
+import { DnsScanResult, SubdomainInfo, DnsResponse } from '@/types/dns';
 
 export async function checkDns(domain: string): Promise<string[]> {
   try {
     const response = await fetch(`https://dns.google/resolve?name=${domain}&type=A`);
-    const data = await response.json();
+    const data: DnsResponse = await response.json();
+    
     return data.Answer
-      ?.filter((record: any) => record.type === 1)
-      .map((record: any) => record.data) || [];
+      ?.filter(record => record.type === 1)
+      .map(record => record.data) || [];
   } catch {
     return [];
   }
