@@ -37,12 +37,7 @@ export default function DomainTable({ result, onUpdate }: Props) {
     }
   };
 
-  const handleDelete = (subdomain: string) => {
-    onUpdate({
-      ...result,
-      subdomains: result.subdomains.filter((s) => s.subdomain !== subdomain),
-    });
-  };
+ 
 
   const handleAddSubdomain = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,16 +68,10 @@ export default function DomainTable({ result, onUpdate }: Props) {
     setNewSub("");
   };
 
-  const isMainDomain = (subdomain: string) => {
-    return (
-      subdomain === result.domain ||
-      subdomain.replace(`.${result.domain}`, "") === ""
-    );
-  };
 
   return (
-    <div>
-      <form onSubmit={handleAddSubdomain} className="mb-4">
+    <div className="space-y-6">
+      <form onSubmit={handleAddSubdomain}>
         <div className="flex flex-col gap-2">
           <div className="flex gap-2">
             <input
@@ -90,77 +79,83 @@ export default function DomainTable({ result, onUpdate }: Props) {
               value={newSub}
               onChange={(e) => setNewSub(e.target.value)}
               placeholder="Add new subdomain"
-              className="border p-2 flex-grow"
+              className="flex-grow px-4 py-2 rounded-lg border border-gray-300 bg-gray-50 focus:bg-white focus:border-gray-500 transition text-gray-800 placeholder-gray-500"
             />
             <button
               type="submit"
-              className="bg-green-500 text-white px-4 py-2 rounded"
+              className="px-6 py-2 rounded-lg bg-gray-700 text-white hover:bg-gray-800 transition-colors"
             >
               Add
             </button>
           </div>
-          {error && <div className="text-red-500 text-sm">{error}</div>}
+          {error && (
+            <div className="text-red-600 text-sm bg-red-100/70 rounded-lg px-4 py-2">
+              {error}
+            </div>
+          )}
         </div>
       </form>
 
-      <table className="min-w-full border">
-        <thead>
-          <tr>
-            <th className="border p-2">Subdomain</th>
-            <th className="border p-2">DNS IPs</th>
-            <th className="border p-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {result.subdomains.map((sub) => (
-            <tr key={sub.subdomain}>
-              <td className="border p-2">{sub.subdomain}</td>
-              <td className="border p-2">
-                <div className="flex flex-col gap-1">
-                  {sub.dnsIp.length ? (
-                    sub.dnsIp.map((ip, i) => (
-                      <span
-                        key={i}
-                        className="bg-gray-100 px-2 py-1 rounded text-sm"
-                      >
-                        {ip}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="text-red-500">No DNS record</span>
-                  )}
-                </div>
-              </td>
-              <td className="border p-2">
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleRefresh(sub.subdomain)}
-                    disabled={refreshing.includes(sub.subdomain)}
-                    className={`px-2 py-1 rounded text-sm text-white ${
-                      refreshing.includes(sub.subdomain)
-                        ? "bg-gray-400"
-                        : "bg-blue-500 hover:bg-blue-600"
-                    }`}
-                  >
-                    {refreshing.includes(sub.subdomain)
-                      ? "Checking..."
-                      : "Refresh"}
-                  </button>
-
-                  {!isMainDomain(sub.subdomain) && (
-                    <button
-                      onClick={() => handleDelete(sub.subdomain)}
-                      className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm"
-                    >
-                      Delete
-                    </button>
-                  )}
-                </div>
-              </td>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="text-left p-3 border-b border-gray-200 text-gray-700">
+                Subdomain
+              </th>
+              <th className="text-left p-3 border-b border-gray-200 text-gray-700">
+                DNS IPs
+              </th>
+              <th className="text-left p-3 border-b border-gray-200 text-gray-700">
+                Actions
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {result.subdomains.map((sub) => (
+              <tr
+                key={sub.subdomain}
+                className="border-b border-gray-100 hover:bg-gray-50"
+              >
+                <td className="p-3 text-gray-900">{sub.subdomain}</td>
+                <td className="p-3">
+                  <div className="flex flex-wrap gap-2">
+                    {sub.dnsIp.length ? (
+                      sub.dnsIp.map((ip, i) => (
+                        <span
+                          key={i}
+                          className="px-3 py-1 rounded-full bg-gray-200 text-gray-800 text-sm"
+                        >
+                          {ip}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-red-600 text-sm">No DNS record</span>
+                    )}
+                  </div>
+                </td>
+                <td className="p-3">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleRefresh(sub.subdomain)}
+                      disabled={refreshing.includes(sub.subdomain)}
+                      className={`px-4 py-1.5 rounded-lg text-sm text-white transition-all ${
+                        refreshing.includes(sub.subdomain)
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-blue-600 hover:bg-blue-700 active:scale-[0.98]"
+                      }`}
+                    >
+                      {refreshing.includes(sub.subdomain)
+                        ? "Checking..."
+                        : "Refresh"}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
